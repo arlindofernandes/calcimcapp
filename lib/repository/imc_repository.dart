@@ -1,28 +1,32 @@
 import 'package:calcimcapp/model/imc.dart';
+import 'package:calcimcapp/repository/sqlitedatabase.dart';
 
 class ImcRepository {
-  final List<Imc> _imcs = [];
-
-  Future<void> adicionat(Imc imc) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _imcs.add(imc);
+  Future<List<ImcModel>> obterDados(int id) async {
+    List<ImcModel> imcs = [];
+    var db = await SQLiteDataBase().obterDataBase();
+    var result = await db
+        .rawQuery('SELECT * FROM Historico_IMC WHERE UsuarioID = ?', [id]);
+    for (var element in result) {
+      imcs.add(ImcModel.fromMap(element));
+    }
+    return imcs;
   }
 
-  Future<void> alterar(String id, double peso, double altura) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _imcs.where((imc) => imc.id == id).first.altura = altura;
-    _imcs.where((imc) => imc.id == id).first.peso = peso;
-    
+  Future<void> salvar(ImcModel imcModel) async {
+    var db = await SQLiteDataBase().obterDataBase();
+    await db.insert('Historico_IMC', imcModel.toMap());
   }
 
-  Future<void> remove(String id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _imcs.remove(_imcs.where((tarefa) => tarefa.id == id).first);
+  Future<void> atualizar(ImcModel imcModel) async {
+    var db = await SQLiteDataBase().obterDataBase();
+    await db.rawInsert(
+        'UPDATE Historico_IMC SET altura = ?, peso = ? WHERE id = ?',
+        [imcModel.altura, imcModel.peso, imcModel.id]);
   }
 
-  Future<List<Imc>> listar() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return _imcs;
+  Future<void> remover(int id) async {
+    var db = await SQLiteDataBase().obterDataBase();
+    await db.rawInsert('DELETE FROM Historico_IMC WHERE id = ?', [id]);
   }
-
 }

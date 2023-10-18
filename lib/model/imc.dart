@@ -1,31 +1,40 @@
-import 'package:flutter/material.dart';
+class ImcModel {
+  int id = 0;
+  int usuarioId = 1;
+  DateTime dataRegistro = DateTime.now();
+  double altura = 0.0;
+  double peso = 0.0;
+  double imc = 0.0;
 
-class Imc {
-  final String _id = UniqueKey().toString();
-  double _peso;
-  double _altura;
+  ImcModel.vazio();
 
-  String getId() {
-    return _id;
+  ImcModel({
+    required this.id,
+    required this.usuarioId,
+    required this.dataRegistro,
+    required this.altura,
+    required this.peso,
+    required this.imc,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'UsuarioID': usuarioId,
+      'DataRegistro': dataRegistro.toIso8601String(),
+      'Altura': altura,
+      'Peso': peso,
+      'IMC': imc,
+    };
   }
 
-  String get id => _id;
-
-  Imc(this._peso, this._altura);
-
-  double get peso => _peso;
-
-  double get altura => _altura;
-
-  set peso(double peso) {
-    _peso = peso;
-  }
-
-  set altura(double altura) {
-    _altura = altura;
-  }
-
-  double calculaIMC() {
-    return peso / (altura * 2);
+  factory ImcModel.fromMap(Map<String, dynamic> map) {
+    return ImcModel(
+      id: map['ID'],
+      usuarioId: map['UsuarioID'],
+      dataRegistro: DateTime.parse(map['DataRegistro']),
+      altura: map['Altura'],
+      peso: map['Peso'],
+      imc: map['IMC'],
+    );
   }
 }
